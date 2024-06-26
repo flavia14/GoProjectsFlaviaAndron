@@ -1,0 +1,30 @@
+package readPack
+
+import (
+	"os"
+)
+
+func ReadTabooWordsFromFile(fileName string) ([]string, error) {
+
+	file, err := os.Open(fileName)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var words []string
+	for scanner.Scan() {
+		words = append(words, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+    for i, word := range words {
+		words[i] = strings.ToLower(word)
+        
+    }
+	return words, nil
+}
