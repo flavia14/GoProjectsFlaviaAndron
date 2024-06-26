@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Application</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: azure;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 200px;
+           
+        }
+        .button {
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 20px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        #weatherData {
+            margin-top: 20px;
+            color: #2980b9;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather Application</h1>
+    <input type="text" id="inputCity" placeholder="Enter a city">
+    <br>
+    <button class="button" id="btnOpenWeatherMap">Get Weather (OpenWeatherMap)</button>
+    <button class="button" id="btnWeatherbit">Get Weather (Weatherbit)</button>
+    <br>
+    <button class="button" id="btnAllCities">Get Weather for All Cities</button>
+    <div id="weatherData"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#btnOpenWeatherMap").click(function() {
+                var city = $("#inputCity").val();
+                if (city !== "") {
+                    $.ajax({
+                        url: "/wm?city=" + city,
+                        type: "GET",
+                        success: function(response) {
+                            $("#weatherData").text("Temperature from WeatherMap: " + response.temperature + "°C");
+                        },
+                        error: function(error) {
+                            $("#weatherData").text("Error: " + error.responseJSON.error);
+                        }
+                    });
+                }
+            });
+
+            $("#btnWeatherbit").click(function() {
+                var city = $("#inputCity").val();
+                if (city !== "") {
+                    $.ajax({
+                        url: "/wb?city=" + city,
+                        type: "GET",
+                        success: function(response) {
+                            $("#weatherData").text("Temperature from Weatherbit: " + response.temperature + "°C");
+                        },
+                        error: function(error) {
+                            $("#weatherData").text("Error: " + error.responseJSON.error);
+                        }
+                    });
+                }
+            });
+
+            $("#btnAllCities").click(function() {
+                $.ajax({
+                    url: "/all",
+                    type: "GET",
+                    success: function(response) {
+                        var weatherData = response.weatherData;
+                        var html = "";
+                        for (var i = 0; i < weatherData.length; i++) {
+                            html += "<li>" + weatherData[i].name + ": " + weatherData[i].main.temp + "°C</li>";
+                        }
+                        $("#weatherData").html("<ul>" + html + "</ul>");
+                    },
+                    error: function(error) {
+                        $("#weatherData").text("Error: " + error.responseJSON.error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
